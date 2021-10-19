@@ -1,0 +1,14 @@
+version: "3.1"
+
+services:
+  fs_server:
+    image: fs_server
+    build:
+      context: .
+    restart: always
+    ports:
+      - 9910:9910
+    volumes:
+      - /media/Dados/Cursos:/Cursos:ro
+      - /media/Dados/Torrents:/Torrents:ro
+      - /media/Dados/Filmes:/Filmes:ro

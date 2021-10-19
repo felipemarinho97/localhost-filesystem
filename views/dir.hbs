@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{title}}</title>
+    <!-- UIkit CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.6.22/dist/css/uikit.min.css" />
+
+    <!-- UIkit JS -->
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.22/dist/js/uikit.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.22/dist/js/uikit-icons.min.js"></script>
+</head>
+<body>
+    <div class="uk-container">
+        <br>
+        <div class="uk-card uk-card-body uk-card-default">
+            <h3 class="uk-card-title">{{title}}</h3>
+            <ul class="uk-breadcrumb">
+                {{#each breadcrumbs}}
+                    <li><a href="{{path}}">{{name}}</a></li>
+                {{/each}}
+            </ul>
+            <ul class="uk-list uk-list-striped">
+                {{#each dir_names}}
+                    <li>                
+                        <a href="{{href}}">{{name}}</a>
+                    </li>
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

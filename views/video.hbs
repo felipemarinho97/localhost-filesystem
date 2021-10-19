@@ -1,0 +1,140 @@
+<html>
+   <head>
+      <title>{{title}}</title>
+      <meta name="viewport" content="width=device-width; height=device-height;">
+      <script type="text/javascript" src="https://cdn.plyr.io/3.6.8/plyr.polyfilled.js"></script>
+      <link rel="stylesheet" href="https://cdn.plyr.io/3.6.8/plyr.css">
+      {{!-- <!-- UIkit CSS -->
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uikit@3.6.22/dist/css/uikit.min.css" />
+      <!-- UIkit JS -->
+      <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.22/dist/js/uikit.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/uikit@3.6.22/dist/js/uikit-icons.min.js"></script> --}}
+   </head>
+   <body style="background: slategray none repeat scroll 0% 0%; display: flex; flex-direction: column; vertical-align: middle;">
+       <div>
+           <button id="prev">Prev</button>
+           <button id="up">Up</button>
+           <button id="next">Next</button>
+       </div>
+       <video src=""></video>
+       <script>
+            function htmlDecode(input) {
+                var doc = new DOMParser().parseFromString(input, "text/html");
+                return doc.documentElement.textContent;
+            }
+
+            function up() {
+                const link = `${location.href.replace(/[^\/]+$/, '')}`
+                location.href = link
+            }
+
+            function getPrev() {
+                const link = `${location.href.replace(/[^\/]+$/, '')}?format=json`
+                fetch(link)
+                    .then(r => r.json())
+                    .then(r => {
+                        const title = htmlDecode('{{title}}')
+
+                        let prev = r.files.indexOf(title) - 1
+
+                        if (prev < 0) {
+                            prev = prev+1
+                        }
+
+                        const prevVideo = r.files[prev]
+                        if (prevVideo.includes('.mp4')) {
+                            location.href = prevVideo + '.html'
+                        } else {
+                            location.href = prevVideo
+                        }
+
+                    })
+            }
+
+            function getNext() {
+                const link = `${location.href.replace(/[^\/]+$/, '')}?format=json`
+                fetch(link)
+                    .then(r => r.json())
+                    .then(r => {
+                        const title = htmlDecode('{{title}}')
+                        console.log(r.files, title)
+
+                        let next = r.files.indexOf(title) + 1
+
+                        if (next > r.files.length) {
+                            next = next-1
+                        }
+
+                        const nextVideo = r.files[next]
+                        if (nextVideo.includes('.mp4')) {
+                            location.href = nextVideo + '.html'
+                        } else {
+                            location.href = nextVideo
+                        }
+
+                    })
+            }
+
+            document.getElementById("up").addEventListener('click', up)
+            document.getElementById("next").addEventListener('click', getNext)
+            document.getElementById("prev").addEventListener('click', getPrev)
+
+            const old_video = document.getElementsByTagName('video').item(0)
+            const body = document.getElementsByTagName('body').item(0)
+            const html = document.getElementsByTagName('html').item(0)
+            const video = document.createElement('video')
+
+            old_video.parentElement.removeChild(old_video)
+            body.appendChild(video)
+            body.style = 'background: slategray;display: table-cell;vertical-align: middle;'
+            html.style = "display: table;margin: auto;"
+
+            video.id = "player"
+            video.controls = true
+            video.playsinline = true
+            video.crossOrigin="anonymous"
+            video.autoplay = true
+
+            const source = document.createElement('source')
+
+            source.type="video/mp4"
+            source.src=location.href.replace('.html', '')
+
+            function addTrack(src, name) {
+            const track = document.createElement('track')
+            track.default = true
+            track.label=name
+            track.kind="captions"
+            track.srclang="en"
+            //   let vtt = location.href.replace('.mp4','.srt')
+            // track.src= vtt
+            track.src= src.replace('file://','http://localhost:9910').replace('.html', '')
+            return track
+            }
+
+            const track1 = addTrack(location.href.replace('.mp4','.srt'), "English SRT")
+            const track2 = addTrack(location.href.replace('.mp4','.vtt'), "English VTT")
+            
+            video.appendChild(source)
+            video.appendChild(track1)
+            video.appendChild(track2)
+            setTimeout(()=> {
+                {{!-- window.player.fullscreen.enter() --}}
+
+                console.log('oi')
+                document.getElementsByTagName('video')[0].webkitEnterFullscreen();
+            },2000)
+
+            window.addEventListener('load', function () 
+            {
+            console.log(window.Plyr)
+
+            window.player = new window.Plyr(video);
+            window.player.toggleCaptions()
+            window.player.play()
+            
+            })
+
+       </script>
+   </body>
+</html>
